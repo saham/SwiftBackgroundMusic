@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 class MusicManager {
     internal init(NumberOfPlayers: Int = 1) {
-        self.NumberOfPlayers = NumberOfPlayers
+        self.NumberOfPlayers =  NumberOfPlayers < 1 ? 1 : NumberOfPlayers
         self.Players = [AVAudioPlayer](repeating: AVAudioPlayer(), count: NumberOfPlayers)
     }
     
@@ -17,6 +17,7 @@ class MusicManager {
     var NumberOfPlayers:Int
     
     func PlaySound(fileName:String,extension ext:String, playerNumber:Int, volume:Float,loop:Int, completion: ((Error?) -> Void)? = nil) {
+        guard (playerNumber >= 0 && playerNumber < self.Players.count) else {return}
         guard !fileName.isEmpty else {
             Players[playerNumber].stop()
             return
@@ -40,6 +41,7 @@ class MusicManager {
     }
     
     func PlaySound(music:Music, playerNumber:Int, volume:Float,loop:Int, completion: ((Error?) -> Void)? = nil) {
+        guard (playerNumber >= 0 && playerNumber < self.Players.count) else {return}
         guard !music.FileName.isEmpty else {
             Players[playerNumber].stop()
             return
@@ -63,6 +65,7 @@ class MusicManager {
     }
     
     func setVolume(forPlayer playerNumber:Int,volume:Float) {
+        guard (playerNumber >= 0 && playerNumber < self.Players.count) else {return}
         if volume == 0 {
             Players[playerNumber].stop()
         } else {
