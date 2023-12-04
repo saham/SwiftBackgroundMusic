@@ -10,6 +10,10 @@ import UIKit
 class ViewController: UIViewController {
     var viewModel:[[Music]] = []
     var musicManager = MusicManager(NumberOfPlayers: 2)
+    
+    @IBAction func volumeChanged(_ sender: UISlider) {
+        musicManager.setVolume(forPlayer: 0,volume: sender.value)
+    }
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()

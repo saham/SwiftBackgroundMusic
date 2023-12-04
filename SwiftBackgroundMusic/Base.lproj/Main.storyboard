@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="UsP-Kx-mSP">
-                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <rect key="frame" x="0.0" y="116" width="393" height="702"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="vkp-oP-BC5" style="IBUITableViewCellStyleDefault" id="yNi-6U-1Do">
@@ -39,14 +39,23 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="79L-tC-WOV">
+                                <rect key="frame" x="0.0" y="78" width="393" height="31"/>
+                                <connections>
+                                    <action selector="volumeChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="CgP-oB-xtt"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="UsP-Kx-mSP" secondAttribute="bottom" id="Kgy-Yt-AF2"/>
+                            <constraint firstItem="79L-tC-WOV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="2" id="OLT-EI-Sak"/>
+                            <constraint firstItem="79L-tC-WOV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="19" id="OgG-oY-Sa8"/>
                             <constraint firstItem="UsP-Kx-mSP" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="S7d-nr-ftm"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="UsP-Kx-mSP" secondAttribute="trailing" id="VA4-uX-JyT"/>
-                            <constraint firstItem="UsP-Kx-mSP" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="jcl-9E-2yH"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="79L-tC-WOV" secondAttribute="trailing" constant="2" id="rUY-ib-H2Y"/>
+                            <constraint firstItem="UsP-Kx-mSP" firstAttribute="top" secondItem="79L-tC-WOV" secondAttribute="bottom" constant="8" id="ykm-1x-sYy"/>
                         </constraints>
                     </view>
                     <connections>

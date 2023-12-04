@@ -62,7 +62,7 @@ class MusicManager {
         }
     }
     
-    func setVolume(for playerNumber:Int,volume:Float) {
+    func setVolume(forPlayer playerNumber:Int,volume:Float) {
         if volume == 0 {
             Players[playerNumber].stop()
         } else {
