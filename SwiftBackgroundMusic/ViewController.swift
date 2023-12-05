@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        musicManager.delegate = self
         viewModel = [
             [
                 Music(urlStr: "https://pixabay.com/music/ambient-the-flashback-60sec-2-174160/",
@@ -79,5 +80,14 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             musicManager.PlaySound(fileName: model.FileName, extension: model.Extension, playerNumber: 1, volume: 1.0, loop: 0)
              */
         }
+    }
+}
+extension UIViewController: MusicManagerProtocol {
+    func audioPlayerDidFinishPlaying(playerNumber: Int, successfully flag: Bool) {
+        print("Implement this")
+    }
+    
+    func audioPlayerDecodeErrorDidOccur(playerNumber: Int, error: Error?) {
+        print("Implement this")
     }
 }
