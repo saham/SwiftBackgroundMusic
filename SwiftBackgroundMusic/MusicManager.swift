@@ -70,7 +70,7 @@ class MusicManager:NSObject {
                     Players[playerNumber].stop()
                 }
             } catch {
-             completion?(error)
+                completion?(error)
             }
         }
     }
