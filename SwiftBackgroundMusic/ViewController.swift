@@ -65,6 +65,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let model = viewModel[indexPath.section][indexPath.row]
         if indexPath.section == 0 {
+            musicManager.Players[1].stop()
             musicManager.PlaySound(music: model, playerNumber: 0, volume: 1.0, loop: -1)
             
             // Alternate method
@@ -73,6 +74,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
              */
             
         } else if indexPath.section == 1 {
+            musicManager.Players[0].stop()
             musicManager.PlaySound(music: model, playerNumber: 1, volume: 1.0, loop: 0)
             
             // Alternate method
