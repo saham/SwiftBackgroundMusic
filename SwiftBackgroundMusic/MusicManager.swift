@@ -77,12 +77,8 @@ class MusicManager:NSObject {
     
     func setVolume(forPlayer playerNumber:Int,volume:Float) {
         guard (playerNumber >= 0 && playerNumber < self.Players.count) else {return}
-        if volume == 0 {
-            Players[playerNumber].stop()
-        } else {
-            Players[playerNumber].play()
-            Players[playerNumber].volume = volume
-        }
+        Players[playerNumber].play()
+        Players[playerNumber].volume = volume
     }
 }
 extension MusicManager: AVAudioPlayerDelegate {
