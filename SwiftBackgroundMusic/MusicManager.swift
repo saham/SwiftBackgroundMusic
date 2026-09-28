@@ -1,128 +1,70 @@
-
 import Foundation
 import AVFoundation
 
-final class MusicManager: NSObject {
+enum Channel: Int, CaseIterable {
+    case background
+    case effect
+    case extra
+}
+
+@MainActor
+final class MusicManager {
     static let shared = MusicManager()
     static let defaultBackgroundVolume: Float = 1.0
-    private var backgroundPlayer = AVAudioPlayer()
-    private var activeSoundEffectPlayers: [AVAudioPlayer] = []
+    private var players: [AVAudioPlayer?] = Array(repeating: nil, count: Channel.allCases.count)
 
-    private override init() {
-        super.init()
+    private init() {
         configureAudioSession()
     }
 
     private func configureAudioSession() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
-                try AVAudioSession.sharedInstance().setActive(true)
-            } catch {
-                print("Failed to configure audio session: \(error)")
-            }
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try session.setActive(true)
+        } catch {
+            print("Failed to configure audio session: \(error)")
         }
     }
-
-    func PlaySoundEffect(music: Music, loop: Int = 0, completion: @escaping ((Error?) -> Void) = { _ in }) {
+    @discardableResult
+    func play(_ music: Music, on channel: Channel, volume: Float = 1.0, loop: Int = 0) -> Bool {
         guard !music.FileName.isEmpty else {
-            DispatchQueue.main.async {
-                self.activeSoundEffectPlayers.forEach { $0.stop() }
-                self.activeSoundEffectPlayers.removeAll()
-            }
-            return
+            stop(channel)
+            return true
         }
 
-        guard let path = Bundle.main.path(forResource: music.FileName, ofType: music.Extension) else {
-            completion(nil)
-            return
-        }
-        let url = URL(fileURLWithPath: path)
-
-        DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                let player = try AVAudioPlayer(contentsOf: url)
-                player.volume = 1.0
-                player.numberOfLoops = loop
-                player.delegate = self
-                player.prepareToPlay()
-
-                DispatchQueue.main.async {
-                    self.activeSoundEffectPlayers.append(player)
-                    player.play()
-                    completion(nil)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(error)
-                }
-            }
-        }
-    }
-    func PlayBackground(music: Music, volume: Float = MusicManager.defaultBackgroundVolume, loop: Int = -1, completion: @escaping ((Error?) -> Void) = { _ in }) {
-        guard !music.FileName.isEmpty else {
-            DispatchQueue.main.async {
-                self.backgroundPlayer.stop()
-            }
-            return
+        guard let url = Bundle.main.url(forResource: music.FileName, withExtension: music.Extension) else {
+            assertionFailure("Missing audio file: \(music.FileName)")
+            print("Missing audio file: \(music.FileName)")
+            return false
         }
 
-        guard let path = Bundle.main.path(forResource: music.FileName, ofType: music.Extension) else {
-            completion(nil)
-            return
-        }
-        let url = URL(fileURLWithPath: path)
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.volume = volume
+            player.numberOfLoops = loop
+            player.prepareToPlay()
 
-        DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                let player = try AVAudioPlayer(contentsOf: url)
-                player.volume = volume
-                player.numberOfLoops = loop
-                player.prepareToPlay()
-
-                DispatchQueue.main.async {
-                    self.backgroundPlayer = player
-                    self.backgroundPlayer.play()
-                    completion(nil)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(error)
-                }
-            }
+            players[channel.rawValue]?.stop()
+            player.play()
+            players[channel.rawValue] = player
+            return true
+        } catch {
+            print("Could not play \(music.FileName): \(error)")
+            return false
         }
     }
 
-    func setBackgroundVolume(_ volume: Float) {
-        DispatchQueue.main.async {
-            self.backgroundPlayer.volume = volume
-        }
+    func setVolume(_ volume: Float, on channel: Channel) {
+        players[channel.rawValue]?.volume = volume
     }
 
-    func stopBackground() {
-        DispatchQueue.main.async {
-            self.backgroundPlayer.stop()
-        }
+    func stop(_ channel: Channel) {
+        players[channel.rawValue]?.stop()
+        players[channel.rawValue] = nil
     }
 
-    func stopAllSoundEffects() {
-        DispatchQueue.main.async {
-            self.activeSoundEffectPlayers.forEach { $0.stop() }
-            self.activeSoundEffectPlayers.removeAll()
-        }
-    }
-}
-
-extension MusicManager: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        DispatchQueue.main.async {
-            self.activeSoundEffectPlayers.removeAll { $0 === player }
-        }
-    }
-
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        DispatchQueue.main.async {
-            self.activeSoundEffectPlayers.removeAll { $0 === player }
-        }
+    func stopAll() {
+        Channel.allCases.forEach { stop($0) }
     }
 }
