@@ -11,3 +11,4 @@ Feel free to update the code to add/remove players as it may fit to your project
 
 
 You can either use the Music class or just simply pass File name and Extension of the music file to a player in MusicManager and play it
+<img width="1206" height="2622" alt="Screenshot iPhone 17 2026-09-27 at 20 17 14" src="https://github.com/user-attachments/assets/87907e67-0fd1-4706-a657-1cee2d80633c" />
