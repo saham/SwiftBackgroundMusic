@@ -1,7 +1,5 @@
 import UIKit
 
-// MARK: - Gradient header
-
 final class GradientView: UIView {
     override class var layerClass: AnyClass { CAGradientLayer.self }
     private var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
@@ -28,9 +26,6 @@ final class GradientView: UIView {
         gradientLayer.colors = cgColors
     }
 }
-
-// MARK: - Cell
-
 final class MusicCell: UITableViewCell {
     static let reuseID = "MusicCell"
 
@@ -113,8 +108,6 @@ final class MusicCell: UITableViewCell {
             }
         }
     }
-
-    /// Quick "pop" so a sound-effect tap feels responsive.
     func pulse() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         UIView.animate(withDuration: 0.12, delay: 0, options: [.curveEaseOut]) {
@@ -133,8 +126,6 @@ final class MusicCell: UITableViewCell {
     }
 }
 
-// MARK: - View controller
-
 class ViewController: UIViewController {
     private var viewModel: [[Music]] = []
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -144,18 +135,15 @@ class ViewController: UIViewController {
     private let nowPlayingLabel = UILabel()
     private let volumeSlider = UISlider()
     private let volumeLabel = UILabel()
-
     private var selectedBackgroundIndexPath: IndexPath?
-
     private let backgroundColors: [UIColor] = [.systemIndigo, .systemPink, .systemTeal]
     private let effectColors: [UIColor] = [.systemOrange, .systemGreen, .systemYellow]
     private let idleGradient: [UIColor] = [.systemGray, .systemGray2]
-
+    private let effectChannels: [Channel] = [.effect, .extra]
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Sounds"
         view.backgroundColor = .systemGroupedBackground
-
         viewModel = [
             [
                 Music(urlStr: "https://pixabay.com/music/ambient-the-flashback-60sec-2-174160/",
@@ -175,14 +163,14 @@ class ViewController: UIViewController {
         setUpTableView()
     }
 
-    // MARK: Colors
-
     private func color(for indexPath: IndexPath) -> UIColor {
         let palette = indexPath.section == 0 ? backgroundColors : effectColors
         return palette[indexPath.row % palette.count]
     }
 
-    // MARK: Setup
+    private func channel(for indexPath: IndexPath) -> Channel {
+        indexPath.section == 0 ? .background : effectChannels[indexPath.row % effectChannels.count]
+    }
 
     private func setUpHeader() {
         headerView.setColors(idleGradient, animated: false)
@@ -255,11 +243,8 @@ class ViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
-    // MARK: Actions
-
     @objc private func volumeChanged(_ sender: UISlider) {
-        MusicManager.shared.setBackgroundVolume(sender.value)
+        MusicManager.shared.setVolume(sender.value, on: .background)
         volumeLabel.text = percentString(for: sender.value)
     }
 
@@ -272,8 +257,6 @@ class ViewController: UIViewController {
         headerView.setColors([accent, .systemPurple], animated: true)
     }
 }
-
-// MARK: - Table
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
@@ -312,18 +295,18 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let model = viewModel[indexPath.section][indexPath.row]
 
         if indexPath.section == 0 {
-            // Background music: replaces whatever is currently playing.
+            guard MusicManager.shared.play(model, on: .background,
+                                           volume: volumeSlider.value, loop: -1) else { return }
+
             let previous = selectedBackgroundIndexPath
             selectedBackgroundIndexPath = indexPath
-            MusicManager.shared.PlayBackground(music: model, loop: -1)
             showNowPlaying(name: model.Name, accent: color(for: indexPath))
 
             var rows = [indexPath]
             if let previous, previous != indexPath { rows.append(previous) }
             tableView.reloadRows(at: rows, with: .none)
         } else {
-            // Sound effect: plays once, can overlap with background and other effects.
-            MusicManager.shared.PlaySoundEffect(music: model, loop: 0)
+            MusicManager.shared.play(model, on: channel(for: indexPath))
             (tableView.cellForRow(at: indexPath) as? MusicCell)?.pulse()
         }
     }
