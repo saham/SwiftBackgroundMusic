@@ -1,27 +1,4 @@
-what about read.me 
-# SwiftBackgroundMusic
-You can add background music and sound effects to any iOS app
 
-You just add music file(s) to the project and play them anytime you want
-
-To play two or more musics cuncurrently,play each on a separate player.
-
-MusicManager initializer takes one parameter and that is number of players.
-
-Feel free to update the code to add/remove players as it may fit to your project
-
-The README is clear about the idea, but it's short and has a few rough spots.
-
-Fixes
-
-"cuncurrently" should be "concurrently", and "musics" should be "music" (or "tracks").
-"play each on a separate player" doesn't say how. A short code example fixes that.
-It describes the initializer as taking a number of players, but you settled on channels indexed by an enum (background, effect, extra). If that's what the code does now, the README should describe the enum, since that's how people will add players.
-It's missing requirements (iOS version, Swift version), how to add audio files to the target, and a license.
-
-Suggested rewrite
-
-markdown
 # SwiftBackgroundMusic
 
 Add background music and sound effects to any iOS app, using Swift and AVAudioPlayer.
